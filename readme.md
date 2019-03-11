@@ -38,3 +38,6 @@ ok-exportar arquivo, escolher se deve fazer download ou abrir arquivo
 ok-exportar para xls/csv
 ok-subreports
 
+##
+download angular
+https://stackoverflow.com/questions/46097136/error-installing-filesaver-in-angular2
