@@ -10,9 +10,9 @@
 	<property name="com.jaspersoft.studio.unit.rightMargin" value="pixel"/>
 	<property name="com.jaspersoft.studio.unit.columnWidth" value="pixel"/>
 	<property name="com.jaspersoft.studio.unit.columnSpacing" value="pixel"/>
-	<property name="com.jaspersoft.studio.data.defaultdataadapter" value="curso_jasper"/>
+	<property name="com.jaspersoft.studio.data.defaultdataadapter" value="One Empty Record"/>
 	<property name="com.jaspersoft.studio.data.sql.tables" value=""/>
-	<parameter name="Parameter1" class="java.lang.String"/>
+	<parameter name="subreportDir" class="java.lang.String"/>
 	<queryString>
 		<![CDATA[]]>
 	</queryString>
@@ -22,6 +22,7 @@
 	<field name="nascimento" class="java.util.Date">
 		<fieldDescription><![CDATA[nascimento]]></fieldDescription>
 	</field>
+	<field name="filhos" class="java.util.List"/>
 	<background>
 		<band splitType="Stretch"/>
 	</background>
@@ -32,7 +33,7 @@
 				<textElement textAlignment="Center" verticalAlignment="Middle">
 					<font size="14" isBold="true"/>
 				</textElement>
-				<text><![CDATA[Pessoas]]></text>
+				<text><![CDATA[Subrelatório]]></text>
 			</staticText>
 		</band>
 	</title>
@@ -42,40 +43,21 @@
 				<reportElement x="0" y="5" width="100" height="30" uuid="a6f8d9d5-71c3-4a6a-bc48-65d929dd95a6"/>
 				<text><![CDATA[page header ]]></text>
 			</staticText>
-			<textField>
-				<reportElement x="210" y="5" width="100" height="17" uuid="5f73ed85-a124-459c-b406-43d8f00223f7"/>
-				<textFieldExpression><![CDATA[$P{Parameter1}]]></textFieldExpression>
-			</textField>
-			<staticText>
-				<reportElement x="120" y="5" width="80" height="17" uuid="b186edad-12ac-42b6-a339-8a77e90e7f7a"/>
-				<text><![CDATA[Parâmetro 1:]]></text>
-			</staticText>
 		</band>
 	</pageHeader>
 	<detail>
-		<band height="91" splitType="Stretch">
+		<band height="80" splitType="Stretch">
 			<property name="com.jaspersoft.studio.unit.height" value="pixel"/>
 			<line>
 				<reportElement positionType="Float" x="0" y="60" width="555" height="1" uuid="86b0115e-7290-4a76-a93f-b56824205620">
 					<property name="com.jaspersoft.studio.unit.height" value="pixel"/>
 				</reportElement>
 			</line>
-			<staticText>
-				<reportElement x="0" y="5" width="80" height="19" uuid="ab15dc15-066d-4266-88c0-1217cf660e2f"/>
-				<text><![CDATA[Nome:]]></text>
-			</staticText>
-			<staticText>
-				<reportElement x="0" y="30" width="80" height="19" uuid="7317d746-47c2-4d5f-b4ea-10729ae3ac7d"/>
-				<text><![CDATA[Nascimento:]]></text>
-			</staticText>
-			<textField>
-				<reportElement x="80" y="6" width="140" height="17" uuid="b8cb3301-8419-485a-bd49-9d17f8e8322f"/>
-				<textFieldExpression><![CDATA[$F{nome}]]></textFieldExpression>
-			</textField>
-			<textField pattern="M/d/yyyy">
-				<reportElement x="80" y="30" width="140" height="18" uuid="8cb0ad81-c076-43c8-8a36-a67c88130734"/>
-				<textFieldExpression><![CDATA[$F{nascimento}]]></textFieldExpression>
-			</textField>
+			<subreport>
+				<reportElement x="28" y="25" width="200" height="20" uuid="07153621-c744-4c5f-96a2-72a2a50604e6"/>
+				<dataSourceExpression><![CDATA[new net.sf.jasperreports.engine.data.JRBeanCollectionDataSource($F{filhos})]]></dataSourceExpression>
+				<subreportExpression><![CDATA[$P{subreportDir} + "sub1.jasper"]]></subreportExpression>
+			</subreport>
 		</band>
 	</detail>
 	<pageFooter>

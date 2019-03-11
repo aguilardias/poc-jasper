@@ -1,6 +1,7 @@
 package br.rest;
 
 import java.util.Date;
+import java.util.List;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -13,4 +14,6 @@ public class Usuario {
 
 	private String nome;
 	private Date nascimento;
+
+	private List<String> filhos;	
 }
