@@ -11,6 +11,7 @@ import java.util.Map;
 
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -34,6 +35,7 @@ import net.sf.jasperreports.export.SimpleXlsxReportConfiguration;
 @RequestMapping("relatorio")
 public class RelatorioRest {
 
+	@CrossOrigin
 	@GetMapping(value = "pessoas")
 	public ResponseEntity<byte[]> pessoas() {
 		try {
@@ -44,30 +46,29 @@ public class RelatorioRest {
 			String tipoArquivo = "application/pdf";
 //			String nomeArquivoExportado = "pessoas.xls";
 //			String tipoArquivo = "application/octet-stream";
-			
-//			String tipoExportacao = "attachment";
-			String tipoExportacao = "inline";
+
+			String tipoExportacao = "attachment";
+//			String tipoExportacao = "inline";
 
 			// parâmetros
 			Map<String, Object> params = new HashMap<>();
 			params.put("Parameter1", "teste 11");
-			
+
 			// data source
-			Usuario usuario1 = new Usuario("user1", new Date(),null);
-			Usuario usuario2 = new Usuario("user2", new Date(),null);
+			Usuario usuario1 = new Usuario("user1", new Date(), null);
+			Usuario usuario2 = new Usuario("user2", new Date(), null);
 			List<Usuario> dados = Arrays.asList(usuario1, usuario2);
-			
+
 			byte[] bytes = gerarRelatorioPdfParaStream(caminhoJasper, params, dados);
 //			byte[] bytes = gerarRelatorioXlsParaStream(caminhoJasper, params, dados);
 //			gerarRelatorioParaArquivo(caminhoJasper, params, dados);
-			
+
 			HttpHeaders headers = new HttpHeaders();
-			headers.add(HttpHeaders.CONTENT_TYPE, tipoArquivo+"; charset=UTF-8");
-			headers.add(HttpHeaders.CONTENT_DISPOSITION, String.format("%s; filename=\"%s\"", tipoExportacao, nomeArquivoExportado));
-			
-			return ResponseEntity.ok()
-					.headers(headers)
-					.body(bytes);
+			headers.add(HttpHeaders.CONTENT_TYPE, tipoArquivo + "; charset=UTF-8");
+			headers.add(HttpHeaders.CONTENT_DISPOSITION,
+					String.format("%s; filename=\"%s\"", tipoExportacao, nomeArquivoExportado));
+
+			return ResponseEntity.ok().headers(headers).body(bytes);
 
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -75,7 +76,7 @@ public class RelatorioRest {
 
 		return null;
 	}
-	
+
 	@GetMapping(value = "subrelatorio")
 	public ResponseEntity<byte[]> subrelatorio() {
 		try {
@@ -84,27 +85,26 @@ public class RelatorioRest {
 
 			String nomeArquivoExportado = "subrelatorio.pdf";
 			String tipoArquivo = "application/pdf";
-			
+
 			String tipoExportacao = "inline";
-			
+
 			// parâmetros
 			Map<String, Object> params = new HashMap<>();
 			params.put("subreportDir", "relatorios/compilados/");
 
 			// data source
-			Usuario usuario1 = new Usuario("user1", new Date(),Arrays.asList("f1","f2"));
-			Usuario usuario2 = new Usuario("user2", new Date(),Arrays.asList("f1"));
+			Usuario usuario1 = new Usuario("user1", new Date(), Arrays.asList("f1", "f2"));
+			Usuario usuario2 = new Usuario("user2", new Date(), Arrays.asList("f1"));
 			List<Usuario> dados = Arrays.asList(usuario1, usuario2);
-			
+
 			byte[] bytes = gerarRelatorioPdfParaStream(caminhoJasper, params, dados);
-			
+
 			HttpHeaders headers = new HttpHeaders();
-			headers.add(HttpHeaders.CONTENT_TYPE, tipoArquivo+"; charset=UTF-8");
-			headers.add(HttpHeaders.CONTENT_DISPOSITION, String.format("%s; filename=\"%s\"", tipoExportacao, nomeArquivoExportado));
-			
-			return ResponseEntity.ok()
-					.headers(headers)
-					.body(bytes);
+			headers.add(HttpHeaders.CONTENT_TYPE, tipoArquivo + "; charset=UTF-8");
+			headers.add(HttpHeaders.CONTENT_DISPOSITION,
+					String.format("%s; filename=\"%s\"", tipoExportacao, nomeArquivoExportado));
+
+			return ResponseEntity.ok().headers(headers).body(bytes);
 
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -113,72 +113,72 @@ public class RelatorioRest {
 		return null;
 	}
 
-	private byte[] gerarRelatorioXlsParaStream(String caminhoJasper,
-			Map<String, Object> params, List<Usuario> dados) throws JRException {
-		
+	private byte[] gerarRelatorioXlsParaStream(String caminhoJasper, Map<String, Object> params, List<Usuario> dados)
+			throws JRException {
+
 		JasperPrint jasperPrint = gerarRelatorio(caminhoJasper, params, dados);
-		
+
 		JRXlsxExporter exporter = new JRXlsxExporter();
 		ByteArrayOutputStream baos = new ByteArrayOutputStream();
-		
+
 		exporter.setExporterInput(new SimpleExporterInput(jasperPrint));
 		exporter.setExporterOutput(new SimpleOutputStreamExporterOutput(baos));
-		
-		SimpleXlsxReportConfiguration reportConfig
-		  = new SimpleXlsxReportConfiguration();
+
+		SimpleXlsxReportConfiguration reportConfig = new SimpleXlsxReportConfiguration();
 		reportConfig.setSheetNames(new String[] { "Employee Data" });
-		 
+
 		exporter.setConfiguration(reportConfig);
 		exporter.exportReport();
-		
+
 		return baos.toByteArray();
 	}
 
-	private byte[] gerarRelatorioPdfParaStream(String caminhoJasper, Map<String, Object> params, Collection<?> dados) throws JRException {
+	private byte[] gerarRelatorioPdfParaStream(String caminhoJasper, Map<String, Object> params, Collection<?> dados)
+			throws JRException {
 
 		JasperPrint jasperPrint = gerarRelatorio(caminhoJasper, params, dados);
-		
+
 //		return JasperExportManager.exportReportToPdf(jasperPrint);
 		JRPdfExporter exporter = new JRPdfExporter();
 		ByteArrayOutputStream baos = new ByteArrayOutputStream();
-		
+
 		exporter.setExporterInput(new SimpleExporterInput(jasperPrint));
 		exporter.setExporterOutput(new SimpleOutputStreamExporterOutput(baos));
-		 
-		SimplePdfReportConfiguration reportConfig
-		  = new SimplePdfReportConfiguration();
+
+		SimplePdfReportConfiguration reportConfig = new SimplePdfReportConfiguration();
 		reportConfig.setSizePageToContent(true);
 		reportConfig.setForceLineBreakPolicy(false);
-		 
-		SimplePdfExporterConfiguration exportConfig
-		  = new SimplePdfExporterConfiguration();
+
+		SimplePdfExporterConfiguration exportConfig = new SimplePdfExporterConfiguration();
 		exportConfig.setMetadataAuthor("SERPRO");
 		exportConfig.setEncrypted(true);
-		//exportConfig.setAllowedPermissionsHint("PRINTING");
-		 
-		//exporter.setConfiguration(reportConfig);
+		// exportConfig.setAllowedPermissionsHint("PRINTING");
+
+		// exporter.setConfiguration(reportConfig);
 		exporter.setConfiguration(exportConfig);
-		
+
 		// exporta o relatório para 'baos'
 		exporter.exportReport();
-		
+
 		return baos.toByteArray();
 	}
-	
-	private void gerarRelatorioPdfParaArquivo(String caminnhoJasper, Map<String, Object> params, Collection<?> dados) throws JRException {
+
+	private void gerarRelatorioPdfParaArquivo(String caminnhoJasper, Map<String, Object> params, Collection<?> dados)
+			throws JRException {
 		JasperPrint jasperPrint = gerarRelatorio(caminnhoJasper, params, dados);
-		
+
 		// exportar para arquivo
 		JasperExportManager.exportReportToPdfFile(jasperPrint, "pessoas.pdf");
 	}
 
-	private JasperPrint gerarRelatorio(String caminhoJasper, Map<String, Object> params, Collection<?> dados) throws JRException {
+	private JasperPrint gerarRelatorio(String caminhoJasper, Map<String, Object> params, Collection<?> dados)
+			throws JRException {
 		InputStream jasperStream = getClass().getResourceAsStream(caminhoJasper);
 		JasperReport jasperReport = (JasperReport) JRLoader.loadObject(jasperStream);
 
 		JRBeanCollectionDataSource dataSource = new JRBeanCollectionDataSource(dados);
 		return JasperFillManager.fillReport(jasperReport, params, dataSource);
-		
+
 	}
 
 }
