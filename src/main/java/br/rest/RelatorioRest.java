@@ -9,6 +9,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.CrossOrigin;
@@ -34,6 +35,9 @@ import net.sf.jasperreports.export.SimpleXlsxReportConfiguration;
 @RestController
 @RequestMapping("relatorio")
 public class RelatorioRest {
+	
+	@Autowired
+	private JasperService jasperService;
 
 	@CrossOrigin
 	@GetMapping(value = "pessoas")
@@ -59,7 +63,7 @@ public class RelatorioRest {
 			Usuario usuario2 = new Usuario("user2", new Date(), null);
 			List<Usuario> dados = Arrays.asList(usuario1, usuario2);
 
-			byte[] bytes = gerarRelatorioPdfParaStream(caminhoJasper, params, dados);
+			byte[] bytes = jasperService.gerarRelatorioPdfParaStream(caminhoJasper, params, dados);
 //			byte[] bytes = gerarRelatorioXlsParaStream(caminhoJasper, params, dados);
 //			gerarRelatorioParaArquivo(caminhoJasper, params, dados);
 
@@ -97,7 +101,7 @@ public class RelatorioRest {
 			Usuario usuario2 = new Usuario("user2", new Date(), Arrays.asList("f1"));
 			List<Usuario> dados = Arrays.asList(usuario1, usuario2);
 
-			byte[] bytes = gerarRelatorioPdfParaStream(caminhoJasper, params, dados);
+			byte[] bytes = jasperService.gerarRelatorioPdfParaStream(caminhoJasper, params, dados);
 
 			HttpHeaders headers = new HttpHeaders();
 			headers.add(HttpHeaders.CONTENT_TYPE, tipoArquivo + "; charset=UTF-8");
